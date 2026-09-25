@@ -1,0 +1,58 @@
+name: MyCondo QA
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_env:
+        description: Environment to test
+        required: true
+        type: choice
+        default: staging
+        options:
+          - staging
+          - production
+
+permissions:
+  contents: read
+
+jobs:
+  qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      TARGET_ENV: ${{ inputs.target_env || 'staging' }}
+      MYCONDO_BASE_URL: ${{ secrets.MYCONDO_BASE_URL }}
+      MYCONDO_STAGING_URL: ${{ secrets.MYCONDO_STAGING_URL }}
+      QA_TENANT_EMAIL: ${{ secrets.QA_TENANT_EMAIL }}
+      QA_TENANT_PASSWORD: ${{ secrets.QA_TENANT_PASSWORD }}
+      QA_ADMIN_EMAIL: ${{ secrets.QA_ADMIN_EMAIL }}
+      QA_ADMIN_PASSWORD: ${{ secrets.QA_ADMIN_PASSWORD }}
+      MYCONDO_EXPECTED_LANGUAGE: de
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run typecheck
+      - run: npm test
+
+      - name: Upload Playwright HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mycondo-playwright-report
+          path: playwright-report/
+          if-no-files-found: ignore
+
+      - name: Upload failure artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mycondo-test-results
+          path: test-results/
+          if-no-files-found: ignore

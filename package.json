@@ -1,0 +1,31 @@
+{
+  "name": "mycondo-qa",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Black-box browser QA for MyCondo",
+  "scripts": {
+    "test": "playwright test",
+    "test:smoke": "playwright test tests/smoke",
+    "test:e2e": "playwright test tests/e2e",
+    "test:regression": "playwright test tests/regression tests/language tests/responsive",
+    "test:language": "playwright test tests/language --project=chromium --workers=1",
+    "test:visual": "playwright test tests/visual",
+    "test:mutations": "playwright test tests/mutations --project=mutations --workers=1",
+    "test:a11y": "playwright test tests/accessibility --project=accessibility --workers=1",
+    "test:performance": "playwright test tests/performance --project=performance --workers=1",
+    "test:api-inventory": "playwright test tests/regression/api-inventory.spec.ts --project=chromium --workers=1",
+    "test:watchdog": "playwright test tests/smoke tests/regression/route-status-matrix.spec.ts tests/regression/network-console.spec.ts --project=chromium --workers=1",
+    "test:stability": "playwright test tests/smoke/dashboard.spec.ts tests/regression/route-status-matrix.spec.ts --project=chromium --workers=1 --repeat-each=2",
+    "test:security": "playwright test tests/security --project=security --workers=1",
+    "test:update-snapshots": "playwright test tests/visual --update-snapshots",
+    "report": "playwright show-report",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
+    "@playwright/test": "^1.55.0",
+    "@types/node": "^22.10.0",
+    "dotenv": "^16.4.7",
+    "typescript": "^5.7.3"
+  }
+}
