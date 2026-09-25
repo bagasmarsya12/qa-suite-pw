@@ -18,7 +18,7 @@ permissions:
 jobs:
   qa:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 45
     env:
       TARGET_ENV: ${{ inputs.target_env || 'staging' }}
       MYCONDO_BASE_URL: ${{ secrets.MYCONDO_BASE_URL }}

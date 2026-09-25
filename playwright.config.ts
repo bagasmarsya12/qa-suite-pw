@@ -16,7 +16,7 @@ export default defineConfig({
   // CI: one retry extra (2) to survive staging hiccups; locally 1 retry keeps
   // flake visible in the HTML report while avoiding one-off staging slowness.
   retries: process.env.CI ? 2 : 1,
-  workers: process.env.CI ? 1 : undefined,
+  workers: process.env.CI ? 2 : undefined,
   reporter: [
     ['list'],
     ['html', { outputFolder: 'playwright-report', open: 'never' }],
