@@ -21,10 +21,12 @@ const DE_DASHBOARD_MARKER = 'Übersicht';
 const EN_DASHBOARD_MARKER = 'Tenant Management';
 
 /** Cookies auth TANPA localStorage — simulasi user baru yang sudah login. */
-const cookiesOnly = (() => {
+function cookiesOnly(): { cookies: unknown[]; origins: never[] } {
+  // Dibaca LAZILY (saat test berjalan, bukan saat module load): file auth dibuat
+  // oleh project `setup`. Membaca di module scope = crash di fresh clone/CI.
   const state = JSON.parse(fs.readFileSync('playwright/.auth/tenant.json', 'utf8'));
   return { cookies: state.cookies, origins: [] };
-})();
+}
 
 async function bodyText(page: Page): Promise<string> {
   // Normalisasi whitespace: innerText memecah baris, marker teks kita lintas-elemen.
@@ -49,7 +51,7 @@ test.describe('Fresh user: default UI is German regardless of browser language',
       const ctx = await browser.newContext({
         locale,
         timezoneId: 'Europe/Berlin',
-        storageState: cookiesOnly as any,
+        storageState: cookiesOnly() as any,
       });
       const page = await ctx.newPage();
       await page.goto('/dashboard/category', { waitUntil: 'domcontentloaded' });
