@@ -5,6 +5,7 @@
   "description": "Black-box browser QA for MyCondo",
   "scripts": {
     "test": "playwright test",
+    "test:ci": "node scripts/ci-gate.mjs",
     "test:smoke": "playwright test tests/smoke",
     "test:e2e": "playwright test tests/e2e",
     "test:regression": "playwright test tests/regression tests/language tests/responsive",

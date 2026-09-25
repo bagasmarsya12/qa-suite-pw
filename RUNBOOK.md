@@ -137,17 +137,22 @@ These tests may send/delete one controlled message and probe draft-save flows. T
 
 ## 7. Visual snapshots
 
-Run the existing visual checks:
+Snapshots are stored per platform (`-darwin` on macOS, `-linux` on the CI runner and other Linux machines) because font rendering differs between operating systems.
 
 ```bash
-npm run test:visual
+npm run test:visual            # compares against the current platform's baseline
+npm run test:update-snapshots  # updates ONLY this platform's baseline, after review
 ```
 
-Only update snapshots after reviewing the visual change:
+To regenerate the Linux baselines locally (recommended: the Playwright Docker image matches the CI runner's rendering more closely than macOS does), use the tag matching `npx playwright --version`:
 
 ```bash
-npm run test:update-snapshots
+docker run --rm -v "$PWD":/work -w /work --env-file .env \
+  mcr.microsoft.com/playwright:v1.63.0-noble \
+  npx playwright test tests/visual --project=visual --update-snapshots
 ```
+
+Commit both `-darwin` and `-linux` baselines. When the GitHub runner image moves to a newer Ubuntu release (for example the announced Ubuntu 26 migration), regenerate the Linux set with the matching image tag. A 1% `maxDiffPixelRatio` tolerance absorbs anti-aliasing jitter; real UI changes sit far above it.
 
 ## 8. Reports and artifacts
 
@@ -188,3 +193,5 @@ Keep the machine awake while scheduled checks run. Use a dedicated QA account an
 - Local runs use `retries: 1`; a retried pass is listed as flaky in the report. Treat flaky results as a signal (staging slowness or a genuine intermittent issue), not as noise to ignore.
 - `navigationTimeout` is 30s. When staging responds slowly, re-run the affected spec rather than widening timeouts; the watchdog and network-console specs already use bounded network-idle waits because dashboards poll continuously.
 - The Playwright HTML report plus `test-results/` are the review artifacts; keep them from scheduled runs for investigation.
+- CI runs `npm run test:ci` (`scripts/ci-gate.mjs`): it executes the full suite and turns the pipeline green when the ONLY failures are the documented application findings, red for anything else. `npm test` keeps raw exit codes for local work. Update the allowlist in `scripts/ci-gate.mjs` when a documented finding is fixed.
+- CI uses 2 workers with a 45-minute budget; the full suite takes roughly 9-12 minutes on GitHub runners against the German staging host.

@@ -99,7 +99,7 @@ The deep probes intentionally preserve observed failures as evidence. One tenant
 
 The expanded German audit checks every read-only route plus create forms and all Settings legal pages. It intentionally fails when the app returns English `Overview` on the dashboard, English navigation on the announcement composer, or missing German body labels on Bin, Restore Factory, and About routes. These are application findings, not test exclusions.
 
-GitHub Actions accepts a manual `workflow_dispatch` environment choice. Configure URLs and credentials as GitHub Secrets. Secrets are never printed or stored in the repository.
+GitHub Actions accepts a manual `workflow_dispatch` environment choice. Configure URLs and credentials as GitHub Secrets. Secrets are never printed or stored in the repository. The pipeline runs `npm run test:ci`: the suite keeps raw exit codes locally, while the CI gate stays green when only the documented application findings fail and turns red for anything new (`scripts/ci-gate.mjs`). Visual baselines are stored per platform (`-darwin`, `-linux`).
 
 ## Extending the suite
 

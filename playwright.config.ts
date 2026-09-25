@@ -8,9 +8,14 @@ export default defineConfig({
   testDir: './tests',
   fullyParallel: true,
   timeout: 45_000,
-  snapshotPathTemplate: '{testDir}/../screenshots/{testFilePath}/{arg}{ext}',
+  // Visual baselines are per-platform ({platform}: darwin locally, linux on CI
+  // runners) because font rendering differs between macOS and Linux.
+  snapshotPathTemplate: '{testDir}/../screenshots/{testFilePath}/{arg}-{platform}{ext}',
   expect: {
     timeout: 10_000,
+    // Absorbs sub-pixel anti-aliasing jitter between otherwise identical
+    // environments; real UI changes are far above 1% of pixels.
+    toHaveScreenshot: { maxDiffPixelRatio: 0.01 },
   },
   forbidOnly: Boolean(process.env.CI),
   // CI: one retry extra (2) to survive staging hiccups; locally 1 retry keeps

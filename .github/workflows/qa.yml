@@ -39,7 +39,8 @@ jobs:
       - run: npm ci
       - run: npx playwright install --with-deps chromium
       - run: npm run typecheck
-      - run: npm test
+      - name: Run suite with documented-findings gate
+        run: npm run test:ci
 
       - name: Upload Playwright HTML report
         if: always()
@@ -54,5 +55,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: mycondo-test-results
-          path: test-results/
+          path: |
+            test-results/
+            ci-results.json
           if-no-files-found: ignore
